@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador d'equips cooperatius</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #2563eb, #0f766e);
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.95;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin: 8px 6px 0 0;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover { background: var(--primary-dark); }
+
+    button.secondary { background: #64748b; }
+    button.success { background: var(--success); }
+    button.warning { background: var(--warning); }
+    button.danger { background: var(--danger); }
+
+    .student-list, .rules-list, .roles-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pill {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f9fafb;
+      font-size: 0.92rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .high { background: #16a34a; }
+    .medium { background: #f59e0b; }
+    .low { background: #dc2626; }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .teams {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .team {
+      background: white;
+      border: 2px solid #dbeafe;
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 160px;
+    }
+
+    .team h3 {
+      margin-top: 0;
+      color: var(--primary-dark);
+    }
+
+    .team ul {
+      padding-left: 18px;
+    }
+
+    .notice {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    @media print {
+      header, .config-section, .toolbar { display: none; }
+      body { background: white; }
+      main { max-width: none; }
+      .team { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Generador d'equips cooperatius</h1>
+    <p>Crea grups equilibrats amb nivells, incompatibilitats, parelles obligatòries i rols.</p>
+  </header>
+
+  <main>
+    <section class="grid config-section">
+      <div class="card">
+        <h2>1. Afegir alumnat</h2>
+        <label for="studentName">Nom de l'alumne/a</label>
+        <input id="studentName" type="text" placeholder="Ex.: Laia" />
+
+        <label for="studentLevel">Nivell</label>
+        <select id="studentLevel">
+          <option value="alt">Alt</option>
+          <option value="mitja">Mitjà</option>
+          <option value="baix">Baix</option>
+        </select>
+
+        <button onclick="addStudent()">Afegir alumne/a</button>
+        <button class="secondary" onclick="loadDemo()">Carregar exemple</button>
+        <button class="danger" onclick="clearAll()">Esborrar tot</button>
+
+        <div id="studentList" class="student-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>2. Regles de grup</h2>
+        <label>Incompatibilitats</label>
+        <div class="grid">
+          <select id="incompA"></select>
+          <select id="incompB"></select>
+        </div>
+        <button class="warning" onclick="addIncompatibility()">Afegir incompatibilitat</button>
+
+        <label>Parelles obligatòries</label>
+        <div class="grid">
+          <select id="pairA"></select>
+          <select id="pairB"></select>
+        </div>
+        <button class="success" onclick="addRequiredPair()">Afegir parella</button>
+
+        <div id="rulesList" class="rules-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>3. Rols i configuració</h2>
+        <label for="teamSize">Mida recomanada de l'equip</label>
+        <select id="teamSize">
+          <option value="3">3 alumnes</option>
+          <option value="4" selected>4 alumnes</option>
+          <option value="5">5 alumnes</option>
+        </select>
+
+        <label for="rolesInput">Rols cooperatius</label>
+        <textarea id="rolesInput">Coordinador/a
+Secretari/ària
+Portaveu
+Responsable de material</textarea>
+        <p class="small">Escriu un rol per línia. S'assignaran automàticament dins de cada equip.</p>
+
+        <button onclick="generateTeams()">Generar equips</button>
+        <button class="secondary" onclick="saveClass()">Guardar classe</button>
+        <button class="secondary" onclick="loadClass()">Carregar classe</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Equips generats</h2>
+      <div class="toolbar">
+        <button class="success" onclick="exportCSV()">Exportar CSV</button>
+        <button class="warning" onclick="window.print()">Exportar PDF / Imprimir</button>
+      </div>
+      <div id="messages"></div>
+      <div id="teams" class="teams"></div>
+    </section>
+  </main>
+
+  <script>
+    let students = [];
+    let incompatibilities = [];
+    let requiredPairs = [];
+    let generatedTeams = [];
+
+    function normalizeName(name) {
+      return name.trim().replace(/\s+/g, ' ');
+    }
+
+    function levelLabel(level) {
+      if (level === 'alt') return 'Alt';
+      if (level === 'mitja') return 'Mitjà';
+      return 'Baix';
+    }
+
+    function levelClass(level) {
+      if (level === 'alt') return 'high';
+      if (level === 'mitja') return 'medium';
+      return 'low';
+    }
+
+    function addStudent() {
+      const nameInput = document.getElementById('studentName');
+      const levelInput = document.getElementById('studentLevel');
+      const name = normalizeName(nameInput.value);
+      const level = levelInput.value;
+
+      if (!name) {
+        alert('Escriu el nom de l’alumne/a.');
+        return;
+      }
+
+      if (students.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+        alert('Aquest alumne/a ja existeix.');
+        return;
+      }
+
+      students.push({ name, level });
+      nameInput.value = '';
+      renderAll();
+    }
+
+    function removeStudent(index) {
+      const removed = students[index].name;
+      students.splice(index, 1);
+      incompatibilities = incompatibilities.filter(r => r[0] !== removed && r[1] !== removed);
+      requiredPairs = requiredPairs.filter(r => r[0] !== removed && r[1] !== removed);
+      renderAll();
+    }
+
+    function renderStudents() {
+      const container = document.getElementById('studentList');
+      container.innerHTML = '';
+
+      students.forEach((student, index) => {
+        const item = document.createElement('div');
+        item.className = 'pill';
+        item.innerHTML = `
+          <span>${student.name} <span class="badge ${levelClass(student.level)}">${levelLabel(student.level)}</span></span>
+          <button class="danger" onclick="removeStudent(${index})">X</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderSelects() {
+      const ids = ['incompA', 'incompB', 'pairA', 'pairB'];
+      ids.forEach(id => {
+        const select = document.getElementById(id);
+        select.innerHTML = '';
+        students.forEach(student => {
+          const option = document.createElement('option');
+          option.value = student.name;
+          option.textContent = student.name;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    function addIncompatibility() {
+      const a = document.getElementById('incompA').value;
+      const b = document.getElementById('incompB').value;
+      if (!a || !b || a === b) return alert('Selecciona dos alumnes diferents.');
+      if (ruleExists(incompatibilities, a, b)) return alert('Aquesta incompatibilitat ja existeix.');
+      incompatibilities.push([a, b]);
+      renderRules();
+    }
+
+    function addRequiredPair() {
+      const a = document.getElementById('pairA').value;
+      const b = document.getElementById('pairB').value;
+      if (!a || !b || a === b) return alert('Selecciona dos alumnes diferents.');
+      if (ruleExists(requiredPairs, a, b)) return alert('Aquesta parella ja existeix.');
+      if (ruleExists(incompatibilities, a, b)) return alert('Aquests alumnes consten com a incompatibles.');
+      requiredPairs.push([a, b]);
+      renderRules();
+    }
+
+    function ruleExists(list, a, b) {
+      return list.some(r => (r[0] === a && r[1] === b) || (r[0] === b && r[1] === a));
+    }
+
+    function removeRule(type, index) {
+      if (type === 'incompatibility') incompatibilities.splice(index, 1);
+      if (type === 'pair') requiredPairs.splice(index, 1);
+      renderRules();
+    }
+
+    function renderRules() {
+      const container = document.getElementById('rulesList');
+      container.innerHTML = '';
+
+      incompatibilities.forEach((rule, index) => {
+        const item = document.createElement('div');
+        item.className = 'pill';
+        item.innerHTML = `<span>🚫 ${rule[0]} i ${rule[1]}</span><button class="danger" onclick="removeRule('incompatibility', ${index})">X</button>`;
+        container.appendChild(item);
+      });
+
+      requiredPairs.forEach((rule, index) => {
+        const item = document.createElement('div');
+        item.className = 'pill';
+        item.innerHTML = `<span>✅ ${rule[0]} i ${rule[1]}</span><button class="danger" onclick="removeRule('pair', ${index})">X</button>`;
+        container.appendChild(item);
+      });
+    }
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function generateTeams() {
+      const teamSize = parseInt(document.getElementById('teamSize').value, 10);
+      const totalTeams = Math.ceil(students.length / teamSize);
+      const messages = [];
+
+      if (students.length < 2) {
+        alert('Cal afegir com a mínim dos alumnes.');
+        return;
+      }
+
+      generatedTeams = Array.from({ length: totalTeams }, (_, i) => ({
+        name: `Equip ${i + 1}`,
+        members: []
+      }));
+
+      const assigned = new Set();
+      const studentMap = new Map(students.map(s => [s.name, s]));
+
+      // 1. Col·locar primer les parelles obligatòries.
+      requiredPairs.forEach(pair => {
+        const availableTeam = generatedTeams.find(team => team.members.length <= teamSize - 2);
+        if (!availableTeam) {
+          messages.push(`No s'ha pogut col·locar la parella ${pair[0]} - ${pair[1]} per manca d'espai.`);
+          return;
+        }
+        pair.forEach(name => {
+          if (!assigned.has(name) && studentMap.has(name)) {
+            availableTeam.members.push(studentMap.get(name));
+            assigned.add(name);
+          }
+        });
+      });
+
+      // 2. Repartir per nivells, alternant equips.
+      const levels = ['alt', 'baix', 'mitja'];
+      levels.forEach(level => {
+        const group = shuffle(students.filter(s => s.level === level && !assigned.has(s.name)));
+        group.forEach(student => {
+          const candidateTeams = generatedTeams
+            .filter(team => team.members.length < teamSize)
+            .sort((a, b) => a.members.length - b.members.length);
+
+          const validTeam = candidateTeams.find(team => !hasIncompatibility(team.members, student.name));
+          if (validTeam) {
+            validTeam.members.push(student);
+            assigned.add(student.name);
+          } else if (candidateTeams[0]) {
+            candidateTeams[0].members.push(student);
+            assigned.add(student.name);
+            messages.push(`S'ha afegit ${student.name}, però potser cal revisar incompatibilitats.`);
+          }
+        });
+      });
+
+      assignRoles();
+      renderTeams(messages);
+    }
+
+    function hasIncompatibility(members, newName) {
+      return members.some(member => ruleExists(incompatibilities, member.name, newName));
+    }
+
+    function assignRoles() {
+      const roles = document.getElementById('rolesInput').value
+        .split('\n')
+        .map(r => r.trim())
+        .filter(Boolean);
+
+      generatedTeams.forEach(team => {
+        team.members.forEach((member, index) => {
+          member.role = roles[index % roles.length] || 'Membre de l’equip';
+        });
+      });
+    }
+
+    function renderTeams(messages = []) {
+      const teamsContainer = document.getElementById('teams');
+      const messagesContainer = document.getElementById('messages');
+      teamsContainer.innerHTML = '';
+      messagesContainer.innerHTML = '';
+
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'notice';
+        div.textContent = msg;
+        messagesContainer.appendChild(div);
+      });
+
+      generatedTeams.forEach(team => {
+        const div = document.createElement('div');
+        div.className = 'team';
+        div.innerHTML = `
+          <h3>${team.name}</h3>
+          <ul>
+            ${team.members.map(member => `
+              <li>
+                <strong>${member.name}</strong>
+                <span class="badge ${levelClass(member.level)}">${levelLabel(member.level)}</span><br>
+                <span class="small">Rol: ${member.role}</span>
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        teamsContainer.appendChild(div);
+      });
+    }
+
+    function exportCSV() {
+      if (!generatedTeams.length) {
+        alert('Primer has de generar els equips.');
+        return;
+      }
+
+      let csv = 'Equip,Alumne,Nivell,Rol\n';
+      generatedTeams.forEach(team => {
+        team.members.forEach(member => {
+          csv += `"${team.name}","${member.name}","${levelLabel(member.level)}","${member.role}"\n`;
+        });
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'equips-cooperatius.csv';
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function saveClass() {
+      const data = {
+        students,
+        incompatibilities,
+        requiredPairs,
+        roles: document.getElementById('rolesInput').value,
+        teamSize: document.getElementById('teamSize').value
+      };
+      localStorage.setItem('classeCooperativa', JSON.stringify(data));
+      alert('Classe guardada en aquest navegador.');
+    }
+
+    function loadClass() {
+      const raw = localStorage.getItem('classeCooperativa');
+      if (!raw) return alert('No hi ha cap classe guardada.');
+      const data = JSON.parse(raw);
+      students = data.students || [];
+      incompatibilities = data.incompatibilities || [];
+      requiredPairs = data.requiredPairs || [];
+      document.getElementById('rolesInput').value = data.roles || '';
+      document.getElementById('teamSize').value = data.teamSize || '4';
+      renderAll();
+    }
+
+    function clearAll() {
+      if (!confirm('Vols esborrar alumnat, regles i equips?')) return;
+      students = [];
+      incompatibilities = [];
+      requiredPairs = [];
+      generatedTeams = [];
+      renderAll();
+      document.getElementById('teams').innerHTML = '';
+      document.getElementById('messages').innerHTML = '';
+    }
+
+    function loadDemo() {
+      students = [
+        { name: 'Laia', level: 'alt' },
+        { name: 'Marc', level: 'alt' },
+        { name: 'Júlia', level: 'alt' },
+        { name: 'Pau', level: 'mitja' },
+        { name: 'Aina', level: 'mitja' },
+        { name: 'Nil', level: 'mitja' },
+        { name: 'Ona', level: 'mitja' },
+        { name: 'Biel', level: 'baix' },
+        { name: 'Ivet', level: 'baix' },
+        { name: 'Jan', level: 'baix' },
+        { name: 'Clàudia', level: 'mitja' },
+        { name: 'Arnau', level: 'alt' }
+      ];
+      incompatibilities = [['Laia', 'Marc']];
+      requiredPairs = [['Biel', 'Aina']];
+      renderAll();
+    }
+
+    function renderAll() {
+      renderStudents();
+      renderSelects();
+      renderRules();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
