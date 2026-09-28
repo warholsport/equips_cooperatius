@@ -10,6 +10,10 @@ Pàgina per a 60 participants: escala d'experiència de l'1 al 5, assignació im
 4. A `index.html`, substitueix `ENGANXA_AQUI_L_URL_DE_L_APP_SCRIPT` per l'URL `/exec` exacta. Publica aquesta carpeta al repositori GitHub Pages i comprova l'enllaç final en un mòbil.
 5. Fes **una prova** amb un navegador, revisa que aparegui una fila a `Assignacions` i, abans del seminari, esborra les files de prova deixant la capçalera. Per a una prova repetida des del mateix navegador, esborra la dada local `seminari-grups-participant-v1` o utilitza una finestra privada nova.
 
+## Accés amb QR
+
+Un cop el lloc estigui operatiu, projecta o imprimeix `qr.html` (la targeta de QR). El fitxer `qr-seminari.svg` es pot utilitzar també en una diapositiva. El QR porta a `https://warholsport.github.io/equips_cooperatius/seminari-grups/`, que és l'URL de participants; la targeta de QR acaba en `/qr.html` i és només per a l'organització. **Prova el QR des d'un mòbil abans de mostrar-lo al seminari.**
+
 En el full hi ha data, identificador aleatori, nivell i grup; no es demana nom. Mostra els números de grup a les taules. Si els participants responen des de navegadors o dispositius diferents, cada navegador compta com una persona. Un grup només pot rebre sis assignacions.
 
 **Limitació de l'equilibri:** l'assignació és immediata. Amb les respostes encara desconegudes, cap algoritme pot garantir una barreja perfecta al final si els nivells arriben en un ordre desfavorable. Aquest algoritme manté els grups de mida similar i, entre grups de la mateixa mida, prefereix el que té menys persones del nivell indicat.
