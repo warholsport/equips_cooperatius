@@ -13,7 +13,7 @@ function doGet() {
 function assignParticipant(id, level) {
   if (!/^[a-f0-9-]{36}$/.test(String(id))) throw new Error('Identificador no vàlid.');
   level = Number(level);
-  if (!Number.isInteger(level) || level < 1 || level > 5) throw new Error('Tria un nivell de l’1 al 5.');
+  if (!Number.isInteger(level) || level < 1 || level > 4) throw new Error('Tria un nivell de l’1 al 4.');
   if (SHEET_ID.indexOf('ENGANXA_') === 0) throw new Error('El full encara no està configurat.');
 
   const lock = LockService.getScriptLock();
