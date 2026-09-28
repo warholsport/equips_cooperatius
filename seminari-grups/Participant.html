@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, sans-serif; color: #16314d; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: white; padding: clamp(20px, 5vw, 40px); }
+    h2 { font-size: clamp(1.45rem, 5vw, 2rem); margin: 0 0 12px; }
+    p { line-height: 1.55; color: #50647a; }
+    .hint { background: #e9f4ff; border-radius: 12px; padding: 12px 15px; font-size: .94rem; }
+    fieldset { border: 0; padding: 0; margin: 26px 0 20px; }
+    legend { font-weight: 700; margin-bottom: 16px; }
+    .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    label { cursor: pointer; position: relative; }
+    input[type=radio] { position: absolute; opacity: 0; }
+    .number { display: grid; place-items: center; min-height: 66px; border: 2px solid #cbd8e7; border-radius: 14px; font-size: 1.5rem; font-weight: 750; transition: .15s; }
+    input:checked + .number { color: white; background: #1661b2; border-color: #1661b2; }
+    input:focus-visible + .number { outline: 3px solid #eea822; outline-offset: 2px; }
+    .ends { display: flex; justify-content: space-between; gap: 10px; color: #52677d; font-size: .87rem; margin-top: 9px; }
+    button { width: 100%; min-height: 54px; background: #1661b2; border: 0; color: white; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .65; cursor: wait; }
+    .error { color: #a12828; min-height: 25px; }
+    .result { text-align: center; padding: 20px 0; }
+    .circle { width: 160px; height: 160px; display: grid; place-items: center; margin: 20px auto; border-radius: 50%; background: #e5f2ff; color: #124f99; font-size: 5rem; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <main id="view">
+    <h2>Quin és el teu nivell d’experiència?</h2>
+    <p>Pensa en la temàtica d’aquest seminari i indica com valores els teus coneixements actuals.</p>
+    <p class="hint">La resposta serveix per formar grups amb nivells diferents. No cal escriure el nom.</p>
+    <form id="form">
+      <fieldset>
+        <legend>Selecciona un valor</legend>
+        <div class="scale">
+          <label><input type="radio" name="level" value="1" required><span class="number">1</span></label>
+          <label><input type="radio" name="level" value="2"><span class="number">2</span></label>
+          <label><input type="radio" name="level" value="3"><span class="number">3</span></label>
+          <label><input type="radio" name="level" value="4"><span class="number">4</span></label>
+          <label><input type="radio" name="level" value="5"><span class="number">5</span></label>
+        </div>
+        <div class="ends"><span>1 · Començo ara</span><span>5 · Molta experiència</span></div>
+      </fieldset>
+      <button id="send" type="submit">Descobrir el meu grup</button>
+      <p class="error" id="error" role="alert"></p>
+    </form>
+  </main>
+  <script>
+    const KEY = 'seminari-grups-participant-v1';
+    let id;
+    try { id = localStorage.getItem(KEY); } catch (_) { /* Emmagatzematge bloquejat en algun iframe. */ }
+    if (!id) {
+      id = crypto.randomUUID();
+      try { localStorage.setItem(KEY, id); } catch (_) { /* Es manté durant aquesta sessió. */ }
+    }
+    const form = document.getElementById('form');
+    const send = document.getElementById('send');
+    const error = document.getElementById('error');
+    function show(result) {
+      const view = document.getElementById('view');
+      view.replaceChildren();
+      const section = document.createElement('section');
+      section.className = 'result';
+      const title = document.createElement('h2');
+      title.textContent = 'Aquest és el teu grup';
+      const circle = document.createElement('div');
+      circle.className = 'circle';
+      circle.textContent = result.group;
+      const note = document.createElement('p');
+      note.textContent = 'Guarda aquest número i busca la taula o les persones del mateix grup.';
+      section.append(title, circle, note);
+      view.append(section);
+    }
+    function fail(e) {
+      send.disabled = false;
+      send.textContent = 'Torna-ho a provar';
+      error.textContent = e.message || 'No s’ha pogut completar l’assignació.';
+    }
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const level = Number(new FormData(form).get('level'));
+      if (!level) return;
+      send.disabled = true;
+      error.textContent = '';
+      send.textContent = 'Assignant el grup…';
+      google.script.run.withSuccessHandler(show).withFailureHandler(fail).assignParticipant(id, level);
+    });
+    // Una recàrrega recupera el grup existent sense duplicar l'assignació.
+    // No consultem el servidor abans d'una tria inicial per evitar una petició innecessària.
+  </script>
+</body>
+</html>
