@@ -1,6 +1,6 @@
 # Grups heterogenis per al seminari
 
-Pàgina per a 60 participants: escala d'experiència de l'1 al 5, assignació immediata a 10 grups de 6. Un Google Sheet compartit registra les assignacions. El bloqueig d'Apps Script evita col·lisions entre respostes simultànies. La mateixa persona conserva el grup si repeteix l'enviament des del mateix navegador. Per a més de 60 persones, cal ajustar `CAPACITY` i l'aforament indicat a la pàgina.
+Pàgina per a 60 participants: escala d'ús de micro:bit de l'1 al 4, assignació immediata a 10 grups de 6. Un Google Sheet compartit registra les assignacions. El bloqueig d'Apps Script evita col·lisions entre respostes simultànies. La mateixa persona conserva el grup si repeteix l'enviament des del mateix navegador. Per a més de 60 persones, cal ajustar `CAPACITY` i l'aforament indicat a la pàgina.
 
 ## Posada en marxa
 
