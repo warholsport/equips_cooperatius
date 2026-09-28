@@ -12,13 +12,14 @@
     .hint { background: #e9f4ff; border-radius: 12px; padding: 12px 15px; font-size: .94rem; }
     fieldset { border: 0; padding: 0; margin: 26px 0 20px; }
     legend { font-weight: 700; margin-bottom: 16px; }
-    .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .scale { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     label { cursor: pointer; position: relative; }
     input[type=radio] { position: absolute; opacity: 0; }
     .number { display: grid; place-items: center; min-height: 66px; border: 2px solid #cbd8e7; border-radius: 14px; font-size: 1.5rem; font-weight: 750; transition: .15s; }
     input:checked + .number { color: white; background: #1661b2; border-color: #1661b2; }
     input:focus-visible + .number { outline: 3px solid #eea822; outline-offset: 2px; }
-    .ends { display: flex; justify-content: space-between; gap: 10px; color: #52677d; font-size: .87rem; margin-top: 9px; }
+    .description { display: block; margin-top: 8px; color: #4d657b; font-size: .84rem; line-height: 1.35; }
+    @media (max-width: 600px) { .scale { grid-template-columns: repeat(2, 1fr); gap: 18px 12px; } }
     button { width: 100%; min-height: 54px; background: #1661b2; border: 0; color: white; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer; }
     button:disabled { opacity: .65; cursor: wait; }
     .error { color: #a12828; min-height: 25px; }
@@ -28,20 +29,18 @@
 </head>
 <body>
   <main id="view">
-    <h2>Quin és el teu nivell d’experiència?</h2>
-    <p>Pensa en la temàtica d’aquest seminari i indica com valores els teus coneixements actuals.</p>
+    <h2>Quin és el teu nivell d’ús de micro:bit?</h2>
+    <p>Selecciona l’opció que millor descriu la teva experiència actual.</p>
     <p class="hint">La resposta serveix per formar grups amb nivells diferents. No cal escriure el nom.</p>
     <form id="form">
       <fieldset>
         <legend>Selecciona un valor</legend>
         <div class="scale">
-          <label><input type="radio" name="level" value="1" required><span class="number">1</span></label>
-          <label><input type="radio" name="level" value="2"><span class="number">2</span></label>
-          <label><input type="radio" name="level" value="3"><span class="number">3</span></label>
-          <label><input type="radio" name="level" value="4"><span class="number">4</span></label>
-          <label><input type="radio" name="level" value="5"><span class="number">5</span></label>
+          <label><input type="radio" name="level" value="1" required><span class="number">1</span><span class="description">Encara no he fet servir micro:bit.</span></label>
+          <label><input type="radio" name="level" value="2"><span class="number">2</span><span class="description">L’he provada en activitats guiades.</span></label>
+          <label><input type="radio" name="level" value="3"><span class="number">3</span><span class="description">Programo projectes senzills amb autonomia.</span></label>
+          <label><input type="radio" name="level" value="4"><span class="number">4</span><span class="description">Dissenyo i aplico activitats amb micro:bit a l’aula.</span></label>
         </div>
-        <div class="ends"><span>1 · Començo ara</span><span>5 · Molta experiència</span></div>
       </fieldset>
       <button id="send" type="submit">Descobrir el meu grup</button>
       <p class="error" id="error" role="alert"></p>
