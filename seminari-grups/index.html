@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153c72">
+  <title>Grups del seminari</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, Segoe UI, sans-serif; color: #15304d; background: #eef4fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #153c72; color: white; padding: 28px 20px; text-align: center; }
+    h1 { margin: 0 0 5px; font-size: clamp(1.5rem, 4vw, 2.2rem); }
+    header p { margin: 0; color: #dce8f8; }
+    main { max-width: 760px; margin: 24px auto; padding: 0 14px; }
+    .card { background: white; border-radius: 20px; box-shadow: 0 12px 30px #12345612; overflow: hidden; }
+    iframe { display: block; width: 100%; height: 680px; border: 0; }
+    .fallback { padding: 0 24px 20px; text-align: center; font-size: .9rem; }
+    a { color: #1559a6; }
+    .setup { padding: 30px; line-height: 1.55; }
+    .setup h2 { margin-top: 0; }
+    code { overflow-wrap: anywhere; }
+    footer { text-align: center; color: #586b80; padding: 22px; font-size: .9rem; }
+    @media (max-width: 500px) { main { margin-top: 12px; } iframe { height: 750px; } }
+  </style>
+</head>
+<body>
+  <header><h1>Grups del seminari</h1><p>Valora el teu nivell i descobreix el teu grup</p></header>
+  <main><div class="card" id="app"></div></main>
+  <footer>10 grups · escala de l’1 al 5 · una assignació per dispositiu</footer>
+  <script>
+    // Substitueix aquest valor per l'URL /exec del desplegament d'Apps Script.
+    const APP_URL = 'ENGANXA_AQUI_L_URL_DE_L_APP_SCRIPT';
+    const app = document.getElementById('app');
+    if (/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(APP_URL)) {
+      const frame = document.createElement('iframe');
+      frame.src = APP_URL;
+      frame.title = 'Autoavaluació i assignació de grup';
+      frame.setAttribute('allow', 'clipboard-write');
+      app.appendChild(frame);
+      const fallback = document.createElement('p');
+      fallback.className = 'fallback';
+      fallback.append('Si el formulari no es carrega, ');
+      const direct = document.createElement('a');
+      direct.href = APP_URL;
+      direct.target = '_blank';
+      direct.rel = 'noopener noreferrer';
+      direct.textContent = 'obre’l directament';
+      fallback.append(direct, '.');
+      app.appendChild(fallback);
+    } else {
+      const box = document.createElement('div');
+      box.className = 'setup';
+      const title = document.createElement('h2');
+      title.textContent = 'Pàgina pendent de configuració';
+      const info = document.createElement('p');
+      info.textContent = 'Cal connectar el registre compartit abans de facilitar aquest enllaç als participants.';
+      box.append(title, info);
+      app.appendChild(box);
+    }
+  </script>
+</body>
+</html>
